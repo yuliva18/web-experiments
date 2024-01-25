@@ -1,5 +1,5 @@
 let canvas = document.getElementById("canvas"),
-    ctx = canvas.getContext('2d')
+    ctx = canvas.getContext('2d');
     
 let heightDed = 8 + 25,
     widthDed = 44;
