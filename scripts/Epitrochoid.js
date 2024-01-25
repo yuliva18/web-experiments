@@ -1,8 +1,6 @@
 let canvas = document.getElementById("canvas"),
     ctx = canvas.getContext('2d')
-// let canvasSizeMult = 1.5;
-// canvas.height = 480 * canvasSizeMult;
-// canvas.width  = 640 * canvasSizeMult;
+    
 let heightDed = 8 + 25,
     widthDed = 44;
 canvas.height = window.innerHeight - heightDed;
@@ -79,7 +77,6 @@ rAF = requestAnimationFrame(loop);
 function loop(){
     newTime = Date.now();
     if (newTime - oldTime > 10 && updateBool){
-        //console.log("loop");
         update();
         oldTime = newTime;
     }
@@ -106,7 +103,6 @@ input2.onchange();
 input3.onchange();
 input1.onchange();
 function update(){
-    // if (i < 360 + 1){
         clear();
         let x = Math.cos(i/180*Math.PI) * mult * (1 + (hypoBool?-radMult:radMult)),
             y = -Math.sin(i/180*Math.PI)* mult * (1 + (hypoBool?-radMult:radMult));
@@ -171,12 +167,6 @@ function update(){
         ctx.stroke();
 
         i+=i_inc;
-
-        //saveImage();
-    // }
-    // else{
-    //     i = 0;
-    // }
 }
 
 //Очистка поля
@@ -189,10 +179,6 @@ function clear(){
 
 //Сохранение изображения
 function saveImage(){
-    // var dataURL = canvas.toDataURL("image/png");
-    // var newTab = window.open('about:blank','image from canvas');
-    // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
-
     let downloadLink = document.createElement('a');
     downloadLink.setAttribute('download', 'CanvasAsImage.png');
     canvas.toBlob(function(blob) {
@@ -200,13 +186,6 @@ function saveImage(){
       downloadLink.setAttribute('href', url);
       downloadLink.click();
     });
-
-    // localStorage.setItem("imgCanvas",canvas.toDataURL());
-    // var img=new Image();
-    // img.onload=function(){
-    //     ctx.drawImage(img,10,20);
-    // }
-    // img.src=localStorage.getItem("imgCanvas");
 }
 
 //Отрисовка окружности
