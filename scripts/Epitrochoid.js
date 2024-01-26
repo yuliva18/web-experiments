@@ -21,7 +21,7 @@ btn1.onclick=function(){mult += Math.min(s_height, s_width)/10; updateIfStopped(
 let btn2 = document.getElementById("button2");
 btn2.onclick=function(){mult -= Math.min(s_height, s_width)/10; updateIfStopped();};
 let btn3 = document.getElementById("button3");
-btn3.onclick=function(){clear();if(!updateBool){i=0;update();}i=0;};
+btn3.onclick=function(){clear();if(!updateBool){i=-i_inc;update();}i=0;};
 let btn4 = document.getElementById("button4");
 btn4.onclick=function(){saveImage();};
 let btn5 = document.getElementById("button5");
@@ -104,6 +104,8 @@ input3.onchange();
 input1.onchange();
 function update(){
         clear();
+        let old_i=i;
+        i = Math.max(i, 0);
         let x = Math.cos(i/180*Math.PI) * mult * (1 + (hypoBool?-radMult:radMult)),
             y = -Math.sin(i/180*Math.PI)* mult * (1 + (hypoBool?-radMult:radMult));
             x0 = Math.cos((hypoBool?-i:i)/180*Math.PI*(hypoBool?rotateCount-1:rotateCount+1)-Math.PI)* mult * lineMult,
@@ -146,8 +148,9 @@ function update(){
             ctx.beginPath();
             ctx.strokeStyle = "#A00";
         }
+        i=old_i;
         //Рисуем улитку от 0 до i
-        for (let i0=0; i0<Math.min(i + + i_inc, 360 * drawCircleCount + i_inc); i0++){
+        for (let i0=0; i0<Math.min(i, 360 * drawCircleCount) + i_inc; i0++){
             x = Math.cos(i0/180*Math.PI) * mult * (1 + (hypoBool?-radMult:radMult)),
             y = -Math.sin(i0/180*Math.PI)* mult * (1 + (hypoBool?-radMult:radMult));
             x0 = Math.cos((hypoBool?-i0:i0)/180*Math.PI*(hypoBool?rotateCount-1:rotateCount+1)-Math.PI)* mult * lineMult,
