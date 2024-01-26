@@ -1,8 +1,6 @@
 let canvas = document.getElementById("canvas"),
     ctx = canvas.getContext('2d');
 let xOffset = 10, yOffset = 18;
-// let xSize = Math.floor((window.innerWidth - xOffset)/cellSize);
-// let ySize = Math.floor((window.innerHeight - yOffset)/cellSize);
 let xSize = 11;
 let ySize = 17;
 let cellSize = Math.min(Math.floor((window.innerWidth - xOffset)*0.4/xSize),Math.floor((window.innerHeight - yOffset)/ySize));
@@ -29,7 +27,7 @@ showScore();
 function resizeText(){
     for (let i=0;i<scoreTexts.length;i++){
         scoreTextLen = (scoreTexts[i].innerHTML).length;
-        scoreTexts[i].setAttribute("style","font-size:" + Math.floor((window.innerWidth - xOffset)*1*fontMult/scoreTextLen) + "px;");
+        scoreTexts[i].setAttribute("style","font-size:" + Math.floor((window.innerWidth - xOffset)*0.8*fontMult/scoreTextLen) + "px;");
     }
 }
 function showScore(){
@@ -130,9 +128,6 @@ function update(){
                 updateBool = false;
                 deadBool = true;
                 drawDeadScreen();
-                // ctx.font = "48px sans";
-                // ctx.fillStyle = "white";
-                // ctx.fillText("You lose :(", canvas.width/2-100, canvas.height/2);
                 return;
             }
         }
@@ -175,6 +170,10 @@ function drawDeadScreen(){
             if (cur_figure[i][j]===1) ctx.fillRect(cellSize * (cur_x + j), cellSize * (cur_y + i), cellSize, cellSize);
         }
     }
+    let fontSize = Math.floor((canvas.width - xOffset)*fontMult/5);
+    ctx.font = fontSize + "px sans";
+    ctx.fillStyle = "white";
+    ctx.fillText("You lose :(", canvas.width/2-canvas.width/4, canvas.height/2);
 }
 //Отрисовка начального экрана
 function drawStartScreen(){
@@ -203,7 +202,6 @@ function moveCurrent(x, y){
 //Появление фигуры
 function createFigure(x, y){
     let figureIndex = Math.floor(Math.random() * allFigures.length);
-    figureIndex = 6;
     let figure = allFigures[figureIndex];
     if (figureIsReal(figure, x, y)){
         cur_figure = figure;
@@ -243,11 +241,11 @@ function removeLines(){
             if(blocks[i][j]!=1)doRemove=false;
         }
         if (doRemove){
-            i++;
             blocks.splice(i, 1);
             blocks = [new Array(xSize)].concat(blocks);
             blocks[0].fill(0);
             delCount++;
+            i++;
         }
     }
     if (delCount>=4){
