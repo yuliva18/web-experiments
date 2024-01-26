@@ -48,7 +48,7 @@ function reRad(){
     radDenumerator = radDenumeratorF / radGcd;
     radMult = radNumerator/radDenumerator;
     lineMult = radMult * input1.value;
-    rotateCount = 1 + (1/radMult);
+    rotateCount = 1/radMult;
     drawCircleCount = radNumerator;
 }
 function updateIfStopped(){
@@ -147,7 +147,7 @@ function update(){
             ctx.strokeStyle = "#A00";
         }
         //Рисуем улитку от 0 до i
-        for (let i0=0; i0<Math.min(i,360 * drawCircleCount + i_inc); i0++){
+        for (let i0=0; i0<Math.min(i + + i_inc, 360 * drawCircleCount + i_inc); i0++){
             x = Math.cos(i0/180*Math.PI) * mult * (1 + (hypoBool?-radMult:radMult)),
             y = -Math.sin(i0/180*Math.PI)* mult * (1 + (hypoBool?-radMult:radMult));
             x0 = Math.cos((hypoBool?-i0:i0)/180*Math.PI*(hypoBool?rotateCount-1:rotateCount+1)-Math.PI)* mult * lineMult,
