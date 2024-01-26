@@ -3,13 +3,17 @@ let canvas = document.getElementById("canvas"),
 
 let cellSize = 50;
 let xSize = 11;
-let ySize = 15;
+let ySize = 17;
 canvas.height = ySize * cellSize;
 canvas.width  = xSize * cellSize;
 //Заливка фона
 ctx.fillStyle = "orange";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle="#252526";
 
+let colors = [
+    "#a32261","#7346ad","#434ca3","#46737d","#2a6637","#9c6410","#cb2b3b"
+]
 let allFigures = [
     [
         [1, 1],
@@ -31,14 +35,14 @@ let allFigures = [
         [1,1,0]
     ],
     [
-        [0,0,0],
         [0,1,1],
-        [1,1,0]
+        [1,1,0],
+        [0,0,0]
     ],
     [
-        [0,0,0],
         [1,1,0],
-        [0,1,1]
+        [0,1,1],
+        [0,0,0]
     ],
     [
         [0,1,0,0],
@@ -50,6 +54,7 @@ let allFigures = [
 
 let cur_x = 4;
 let cur_y = 0;
+let cur_figure_id = null;
 let cur_figure = null;
 let blocks = new Array(ySize);
 for (let i=0;i<ySize;i++){
@@ -85,9 +90,23 @@ function update(){
             else {
                 updateBool = false;
                 console.log("lose");
-                blocksClear();
                 ctx.fillStyle = "orange";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "black";
+                for (let i=0;i<blocks.length;i++){
+                    for (let j=0;j<blocks[i].length;j++){
+                        if (blocks[i][j]===1) ctx.fillRect(cellSize * j, cellSize * i, cellSize, cellSize);
+                    }
+                }
+                for (let i=0;i<cur_figure.length;i++){
+                    for (let j=0;j<cur_figure[i].length;j++){
+                        if (cur_figure[i][j]===1) ctx.fillRect(cellSize * (cur_x + j), cellSize * (cur_y + i), cellSize, cellSize);
+                    }
+                }
+                ctx.font = "48px sans";
+                ctx.fillStyle = "white";
+                ctx.fillText("You lose :(", canvas.width/2-100, canvas.height/2);
+                blocksClear();
                 step = 0;
                 return;
             }
@@ -97,7 +116,7 @@ function update(){
     }
     step++;
     //Рисовать
-    ctx.fillStyle = "black";
+    ctx.fillStyle = cur_figure_id!==null?colors[cur_figure_id]:"black";
     for (let i=0;i<cur_figure.length;i++){
         for (let j=0;j<cur_figure[i].length;j++){
             if (cur_figure[i][j]===1) ctx.fillRect(cellSize * (cur_x + j), cellSize * (cur_y + i), cellSize, cellSize);
@@ -107,6 +126,7 @@ function update(){
     for (let i=0;i<blocks.length;i++){
         for (let j=0;j<blocks[i].length;j++){
             if (blocks[i][j]===1) ctx.fillRect(cellSize * j, cellSize * i, cellSize, cellSize);
+            ctx.strokeRect(cellSize * j, cellSize * i, cellSize, cellSize);
         }
     }
 }
@@ -137,6 +157,7 @@ function createFigure(x, y){
     let figure = allFigures[figureIndex];
     if (figureIsReal(figure, x, y)){
         cur_figure = figure;
+        cur_figure_id = figureIndex;
         return true;
     }
     return false;
@@ -201,7 +222,7 @@ window.addEventListener("keydown", (event) => {
 //Очистка поля
 function clear(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "#252526";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
 }
