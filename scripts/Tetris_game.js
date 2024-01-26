@@ -1,16 +1,44 @@
 let canvas = document.getElementById("canvas"),
     ctx = canvas.getContext('2d');
-
-let cellSize = 50;
+let xOffset = 10, yOffset = 18;
+// let xSize = Math.floor((window.innerWidth - xOffset)/cellSize);
+// let ySize = Math.floor((window.innerHeight - yOffset)/cellSize);
 let xSize = 11;
 let ySize = 17;
+let cellSize = Math.min(Math.floor((window.innerWidth - xOffset)*0.4/xSize),Math.floor((window.innerHeight - yOffset)/ySize));
 canvas.height = ySize * cellSize;
 canvas.width  = xSize * cellSize;
-//Заливка фона
-ctx.fillStyle = "orange";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.strokeStyle="#252526";
+let fontMult = 0.6;
+let scoreTexts = document.getElementsByClassName("score_text");
+resizeText();
+window.addEventListener('resize', function(event) {
+    cellSize = Math.min(Math.floor((window.innerWidth - xOffset)*0.4/xSize),Math.floor((window.innerHeight - yOffset)/ySize));
+    canvas.height = ySize * cellSize;
+    canvas.width  = xSize * cellSize;
+    startBool?deadBool?drawDeadScreen():drawGame():drawStartScreen();
+    startBool?deadBool?drawDeadScreen():drawGame():drawStartScreen();
+    resizeText();
+}, true);
 
+//Начальный экран
+let score = 0;
+drawStartScreen();
+showScore();
+
+//Интерфейс
+function resizeText(){
+    for (let i=0;i<scoreTexts.length;i++){
+        scoreTextLen = (scoreTexts[i].innerHTML).length;
+        scoreTexts[i].setAttribute("style","font-size:" + Math.floor((window.innerWidth - xOffset)*1*fontMult/scoreTextLen) + "px;");
+    }
+}
+function showScore(){
+    for (let i=0;i<scoreTexts.length;i++){
+        scoreTexts[i].innerHTML = "score: " + score;
+    }
+}
+
+//Фигурки и цвета
 let colors = [
     "#a32261","#7346ad","#434ca3","#46737d","#2a6637","#9c6410","#cb2b3b"
 ]
@@ -67,6 +95,8 @@ let oldTime = null;
 let newTime = null;
 let rAF = null;
 let updateBool = false;
+let deadBool = false;
+let startBool = false;
 rAF = requestAnimationFrame(loop);
 function loop(){
     newTime = Date.now();
@@ -79,43 +109,42 @@ function loop(){
 let step = 0;
 function update(){
     clear();
+    if (deadBool){
+        deadBool = false;
+        blocksClear();
+        score = 0;
+        showScore();
+        step = 0;
+    }
+    startBool = true;
     //Умирать
     if (step===25){
         if (moveCurrent(0, 1)) null;
         else {
             stopFigure();
+            removeLines();
             cur_x = 4;
             cur_y = 0;
             if (createFigure(cur_x, cur_y)) null;
             else {
                 updateBool = false;
-                console.log("lose");
-                ctx.fillStyle = "orange";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "black";
-                for (let i=0;i<blocks.length;i++){
-                    for (let j=0;j<blocks[i].length;j++){
-                        if (blocks[i][j]===1) ctx.fillRect(cellSize * j, cellSize * i, cellSize, cellSize);
-                    }
-                }
-                for (let i=0;i<cur_figure.length;i++){
-                    for (let j=0;j<cur_figure[i].length;j++){
-                        if (cur_figure[i][j]===1) ctx.fillRect(cellSize * (cur_x + j), cellSize * (cur_y + i), cellSize, cellSize);
-                    }
-                }
-                ctx.font = "48px sans";
-                ctx.fillStyle = "white";
-                ctx.fillText("You lose :(", canvas.width/2-100, canvas.height/2);
-                blocksClear();
-                step = 0;
+                deadBool = true;
+                drawDeadScreen();
+                // ctx.font = "48px sans";
+                // ctx.fillStyle = "white";
+                // ctx.fillText("You lose :(", canvas.width/2-100, canvas.height/2);
                 return;
             }
         }
-        removeLines();
         step=0;
     }
     step++;
     //Рисовать
+    drawGame();
+}
+//Отрисовка она игры
+function drawGame(){
+    clear();
     ctx.fillStyle = cur_figure_id!==null?colors[cur_figure_id]:"black";
     for (let i=0;i<cur_figure.length;i++){
         for (let j=0;j<cur_figure[i].length;j++){
@@ -123,6 +152,7 @@ function update(){
         }
     }
     ctx.fillStyle = "grey";
+    ctx.strokeStyle="#252526";
     for (let i=0;i<blocks.length;i++){
         for (let j=0;j<blocks[i].length;j++){
             if (blocks[i][j]===1) ctx.fillRect(cellSize * j, cellSize * i, cellSize, cellSize);
@@ -130,7 +160,27 @@ function update(){
         }
     }
 }
-
+//Отрисовка экрана проигрыша
+function drawDeadScreen(){
+    ctx.fillStyle = "orange";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+    for (let i=0;i<blocks.length;i++){
+        for (let j=0;j<blocks[i].length;j++){
+            if (blocks[i][j]===1) ctx.fillRect(cellSize * j, cellSize * i, cellSize, cellSize);
+        }
+    }
+    for (let i=0;i<cur_figure.length;i++){
+        for (let j=0;j<cur_figure[i].length;j++){
+            if (cur_figure[i][j]===1) ctx.fillRect(cellSize * (cur_x + j), cellSize * (cur_y + i), cellSize, cellSize);
+        }
+    }
+}
+//Отрисовка начального экрана
+function drawStartScreen(){
+    ctx.fillStyle = "orange";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 //Фигуру можно поставить
 function figureIsReal(figure,x,y){
     for (let i=0;i<figure.length;i++){
@@ -146,7 +196,6 @@ function moveCurrent(x, y){
     if (figureIsReal(cur_figure, cur_x+x, cur_y+y)){
         cur_x+=x;
         cur_y+=y;
-        console.log(cur_x, cur_y);
         return true;
     }
     return false;
@@ -154,6 +203,7 @@ function moveCurrent(x, y){
 //Появление фигуры
 function createFigure(x, y){
     let figureIndex = Math.floor(Math.random() * allFigures.length);
+    figureIndex = 6;
     let figure = allFigures[figureIndex];
     if (figureIsReal(figure, x, y)){
         cur_figure = figure;
@@ -186,17 +236,27 @@ function rotateFigure(right = true){
 }
 //Удаление заполненных строк
 function removeLines(){
+    let delCount = 0;
     for (let i=blocks.length-1;i>=0;i--){
         let doRemove = true;
         for (let j=0;j<blocks[i].length;j++){
             if(blocks[i][j]!=1)doRemove=false;
         }
         if (doRemove){
+            i++;
             blocks.splice(i, 1);
             blocks = [new Array(xSize)].concat(blocks);
             blocks[0].fill(0);
+            delCount++;
         }
     }
+    if (delCount>=4){
+        score+=100;
+    }
+    else{
+        score+=delCount;
+    }
+    showScore();
 }
 //Очистка массива блоков
 function blocksClear(){
@@ -207,7 +267,6 @@ function blocksClear(){
 
 //Обработка нажатий клавиш
 window.addEventListener("keydown", (event) => {
-    console.log(event.key, event.keyCode);
     switch(event.keyCode){
         case 32: updateBool=!updateBool; break;
         case 83: if (updateBool) moveCurrent(0, 1); break;

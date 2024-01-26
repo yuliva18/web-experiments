@@ -4,6 +4,12 @@
     min-height: 280px;
 }
 
+.Tetris_game{
+    resize: both;
+    min-width: 100px;
+    min-height: 100px;
+}
+
 body{
     background: #eee;
 }
