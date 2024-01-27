@@ -11,5 +11,12 @@
 }
 
 body{
-    background: #eee;
+    /* background: #eee; */
+    margin: 0;
+    /* background: #111111; */
+}
+
+.header{
+    height: 80px;
+    flex-shrink: 0;
 }
