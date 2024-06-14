@@ -10,6 +10,12 @@
     min-height: 400px;
 }
 
+._3Dobj{
+    resize: both;
+    min-width: 600px;
+    min-height: 400px;
+}
+
 body{
     /* background: #eee; */
     margin: 0;
